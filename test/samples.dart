@@ -3,7 +3,7 @@ class ViewportData {
   final double width, height;
   final double lng, lat;
   final double zoom, bearing;
-  final double pitch, altitude;
+  final double? pitch, altitude;
 
   const ViewportData._(this.name, this.width, this.height, this.lng, this.lat, this.zoom, this.bearing, {this.pitch, this.altitude});
 
@@ -12,7 +12,7 @@ class ViewportData {
   factory ViewportData.rotated() => ViewportData._('Rotated', 1267, 400, -122.4194, 37.7749, 11, 180, pitch: 60, altitude: 1.5);
   factory ViewportData.highLatitude() => ViewportData._('HighLatitude', 500, 500, 42.42694, 75.751537, 15.5, -40, pitch: 20, altitude: 1.5);
 
-  factory ViewportData.copyWith(ViewportData original, {double lng, double lat}) => ViewportData._(
+  factory ViewportData.copyWith(ViewportData original, {double? lng, double? lat}) => ViewportData._(
         original.name,
         original.width,
         original.height,

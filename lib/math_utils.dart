@@ -9,7 +9,7 @@ num scaleToZoom(double scale) => log2(scale);
 
 /// Generates a perspective projection matrix with the given bounds.
 /// see: [gl-matrix/mat4.js](https://github.com/toji/gl-matrix/blob/master/src/mat4.js)
-Matrix4 perspective({double fovy, double aspect, double near, double far}) {
+Matrix4 perspective({required double fovy, required double aspect, double? near, double? far}) {
   final out = Matrix4.zero();
   final f = 1.0 / tan(fovy / 2);
 
@@ -18,12 +18,12 @@ Matrix4 perspective({double fovy, double aspect, double near, double far}) {
   out[11] = -1;
 
   if (far != null && !far.isInfinite) {
-    final nf = 1 / (near - far);
+    final nf = 1 / (near! - far);
     out[10] = (far + near) * nf;
     out[14] = (2 * far * near) * nf;
   } else {
     out[10] = -1;
-    out[14] = -2 * near;
+    out[14] = -2 * near!;
   }
 
   return out;
@@ -37,12 +37,12 @@ Vector4 transformVector(Vector4 vector, Matrix4 matrix) {
 }
 
 Matrix4 getViewMatrix({
-  num height,
-  double pitch,
-  double bearing,
-  double altitude,
-  double scale,
-  Vector2 center,
+  required num height,
+  required double pitch,
+  required double bearing,
+  required double altitude,
+  required double scale,
+  Vector2? center,
 }) {
   scale /= height;
   final vm = Matrix4.identity()
@@ -61,12 +61,12 @@ Matrix4 getViewMatrix({
 }
 
 Matrix4 getProjMatrix({
-  num width,
-  num height,
-  double pitch,
-  double altitude,
-  double nearZMultiplier,
-  double farZMultiplier,
+  required num width,
+  required num height,
+  required double pitch,
+  required double altitude,
+  double? nearZMultiplier,
+  required double farZMultiplier,
 }) {
   final projParams = getProjParameters(
     width,
@@ -78,10 +78,10 @@ Matrix4 getProjMatrix({
   );
 
   return perspective(
-    fovy: projParams['fov'],
-    aspect: projParams['aspect'],
-    near: projParams['near'],
-    far: projParams['far'],
+    fovy: projParams['fov'] as double,
+    aspect: projParams['aspect'] as double,
+    near: projParams['near'] as double?,
+    far: projParams['far'] as double?,
   );
 }
 
@@ -94,17 +94,17 @@ Vector4 worldToPixels(Vector3 xyz, Matrix4 pixelProjMatrix) {
 }
 
 /// Unproject [xyz] pixels on screen to flat coordinates given the [pixelUnprojMatrix].
-Vector pixelsToWorld(Vector3 xyz, Matrix4 pixelUnprojMatrix, {double targetZ}) {
+Vector pixelsToWorld(Vector3 xyz, Matrix4? pixelUnprojMatrix, {double? targetZ}) {
   final x = xyz[0], y = xyz[1], z = xyz[2];
   assert(x.isFinite && y.isFinite, 'invalid pixel coordinate');
 
   if (z.isFinite) {
-    final coord = transformVector(Vector4(x, y, z, 1), pixelUnprojMatrix);
+    final coord = transformVector(Vector4(x, y, z, 1), pixelUnprojMatrix!);
     return coord;
   }
 
   /// unproject two points to get a line and then find the point on that line with z=0
-  final coord0 = transformVector(Vector4(x, y, 0, 1), pixelUnprojMatrix);
+  final coord0 = transformVector(Vector4(x, y, 0, 1), pixelUnprojMatrix!);
   final coord1 = transformVector(Vector4(x, y, 1, 1), pixelUnprojMatrix);
 
   final z0 = coord0[2], z1 = coord1[2];
