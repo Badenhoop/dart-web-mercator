@@ -2,7 +2,7 @@ part of web_mercator;
 
 class MercatorViewport {
   final num width, height;
-  final double? lat, lng, zoom, pitch, bearing, altitude, unitsPerMeter;
+  final double lat, lng, zoom, pitch, bearing, altitude, unitsPerMeter;
   final Vector2 center;
 
   Matrix4? viewMatrix, projMatrix;
@@ -11,39 +11,40 @@ class MercatorViewport {
   MercatorViewport({
     required num width,
     required num height,
-    double this.lng = .0,
-    double this.lat = .0,
+    this.lng = .0,
+    this.lat = .0,
     this.zoom = .0,
     this.pitch = .0,
     this.bearing = .0,
-    double this.altitude = 1.5,
+    this.altitude = 1.5,
     double nearZMultiplier = .02,
     double farZMultiplier = 1.01,
   })  : assert(altitude >= .75, 'invalid altitude'),
-        this.width = max(1, width),
-        this.height = max(1, height),
+        width = max(1, width),
+        height = max(1, height),
         unitsPerMeter = getDistanceScales(lng, lat)['unitsPerMeter']![2],
         center = lngLatToWorld(lng, lat) {
-
     viewMatrix = getViewMatrix(
       height: this.height,
-      pitch: pitch!,
-      bearing: bearing!,
-      altitude: max(.75, altitude!),
-      scale: zoomToScale(zoom!) as double,
+      pitch: pitch,
+      bearing: bearing,
+      altitude: max(.75, altitude),
+      scale: zoomToScale(zoom) as double,
       center: center,
     );
 
     projMatrix = getProjMatrix(
       width: this.width,
       height: this.height,
-      pitch: pitch!,
-      altitude: altitude!,
+      pitch: pitch,
+      altitude: altitude,
       nearZMultiplier: nearZMultiplier,
       farZMultiplier: farZMultiplier,
     );
 
-    _viewProjMatrix = Matrix4.identity()..multiply(projMatrix!)..multiply(viewMatrix!);
+    _viewProjMatrix = Matrix4.identity()
+      ..multiply(projMatrix!)
+      ..multiply(viewMatrix!);
 
     _pixelProjMatrix = Matrix4.identity()
       ..scale(this.width * .5, -this.height * .5, 1)
@@ -78,7 +79,7 @@ class MercatorViewport {
       height: height,
       lng: lngLatZoom['lng'] as double,
       lat: lngLatZoom['lat'] as double,
-      zoom: lngLatZoom['zoom'] as double?,
+      zoom: lngLatZoom['zoom'] as double,
     );
   }
 
@@ -92,8 +93,8 @@ class MercatorViewport {
       MercatorViewport(
         width: from.width,
         height: from.height,
-        lng: from.lng!,
-        lat: from.lat!,
+        lng: from.lng,
+        lat: from.lat,
         pitch: pitch ?? from.pitch,
         bearing: bearing ?? from.bearing,
         zoom: zoom ?? from.zoom,
@@ -107,7 +108,9 @@ class MercatorViewport {
     final coord = worldToPixels(worldPosition, _pixelProjMatrix!);
     final num y = topLeft ? coord[1] : height - coord[1];
 
-    return vector is Vector2 ? Vector2(coord[0], y as double) : Vector3(coord[0], y as double, coord[2]);
+    return vector is Vector2
+        ? Vector2(coord[0], y as double)
+        : Vector3(coord[0], y as double, coord[2]);
   }
 
   /// Unproject [xyz] coordinates onto world coordinates.
@@ -126,7 +129,7 @@ class MercatorViewport {
     final coord = pixelsToWorld(
       Vector3(vec[0], topLeft ? vec[1] : height - vec[1] as double, z),
       _pixelUnprojMatrix,
-      targetZ: targetZ != null ? targetZ * unitsPerMeter! : null,
+      targetZ: targetZ != null ? targetZ * unitsPerMeter : null,
     );
 
     final unprojPosition = unprojectPosition(coord);
@@ -154,7 +157,7 @@ class MercatorViewport {
     }
 
     final flatProjection = projectFlat(vec[0], vec[1]);
-    final num z = (vector is Vector3 ? vector[2] : 0) * unitsPerMeter!;
+    final num z = (vector is Vector3 ? vector[2] : 0) * unitsPerMeter;
 
     return Vector3(flatProjection[0], flatProjection[1], z as double);
   }
@@ -174,7 +177,8 @@ class MercatorViewport {
     }
 
     final unprojection = unprojectFlat(vec[0], vec[1]);
-    final dynamic z = (vec is Vector3 || vec is Vector4 ? vec[2] : 0) / unitsPerMeter;
+    final dynamic z =
+        (vec is Vector3 || vec is Vector4 ? vec[2] : 0) / unitsPerMeter;
 
     return Vector3(unprojection[0], unprojection[1], z);
   }
@@ -185,7 +189,9 @@ class MercatorViewport {
 
   /// Get the map center that places a given [lngLat] coordinate at screen point [pos].
   Vector2 getLocationAtPoint({required Vector2 lngLat, required Vector2 pos}) {
-    final fromLocation = pixelsToWorld(Vector3(pos[0], pos[1], double.nan), _pixelUnprojMatrix) as Vector2;
+    final fromLocation =
+        pixelsToWorld(Vector3(pos[0], pos[1], double.nan), _pixelUnprojMatrix)
+            as Vector2;
     final toLocation = lngLatToWorld(lngLat[0], lngLat[1]);
 
     final translate = toLocation.clone();
@@ -199,10 +205,12 @@ class MercatorViewport {
   }
 
   @override
-  int get hashCode => quiver.hashObjects([width, height, viewMatrix!, projMatrix!]);
+  int get hashCode =>
+      quiver.hashObjects([width, height, viewMatrix!, projMatrix!]);
 
   @override
-  bool operator ==(Object other) => other is MercatorViewport && other.hashCode == hashCode;
+  bool operator ==(Object other) =>
+      other is MercatorViewport && other.hashCode == hashCode;
 
   @override
   String toString() => '''

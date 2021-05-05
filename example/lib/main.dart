@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -35,9 +35,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _scaling = false;
   double _pitch = .0, _bearing = .0, _zoom = .0;
-  Offset _lastFocalPoint;
-  MercatorViewport _viewport;
-  Future<Map<String, List>> _martinique;
+  Offset? _lastFocalPoint;
+  MercatorViewport? _viewport;
+  Future<Map<String, List>>? _martinique;
 
   @override
   void initState() {
@@ -45,12 +45,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
-  Future<Map<String, List>> _parsePolygons(BuildContext context, String file) async {
+  Future<Map<String, List>> _parsePolygons(
+      BuildContext context, String file) async {
     final data = await DefaultAssetBundle.of(context).loadString(file);
     final dynamic map = await json.decode(data);
 
     List<List<Vector2>> polygons = [];
-    List<List<double>> points = [];
+    List<List<double?>> points = [];
 
     for (final polygon in map['geometries'][0]['coordinates']) {
       polygons.add([]);
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    return {'polygons': polygons, 'bounds': bbox(points)};
+    return {'polygons': polygons, 'bounds': bbox(points as List<List<double>>)};
   }
 
   @override
@@ -69,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return GestureDetector(
       onScaleStart: (scale) {
         _lastFocalPoint = scale.focalPoint;
-        _zoom = _viewport.zoom;
+        _zoom = _viewport!.zoom;
         _scaling = true;
       },
       onScaleEnd: (scale) {
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
 
           final size = MediaQuery.of(context).size;
-          final deltaOffset = focalPoint - _lastFocalPoint;
+          final deltaOffset = focalPoint - _lastFocalPoint!;
 
           _pitch -= deltaOffset.dy * pitchDragFactor;
           if (focalPoint.dy > size.height * .5) {
@@ -98,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           setState(() {
             _viewport = MercatorViewport.copyWith(
-              _viewport,
+              _viewport!,
               pitch: _pitch,
               bearing: _bearing,
               zoom: zoom,
@@ -117,13 +118,14 @@ class _MyHomePageState extends State<MyHomePage> {
               _viewport = MercatorViewport.fitBounds(
                 width: size.width,
                 height: size.height,
-                bounds: snapshot.data['bounds'],
+                bounds: snapshot.data!['bounds'] as List<num>,
                 padding: 20,
               );
             }
 
             return CustomPaint(
-              painter: PolygonPainter(_viewport, snapshot.data['polygons']),
+              painter: PolygonPainter(_viewport,
+                  snapshot.data!['polygons'] as List<List<Vector2>>?),
             );
           } else {
             return Center(child: CircularProgressIndicator());
@@ -135,15 +137,15 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class PolygonPainter extends CustomPainter {
-  final MercatorViewport viewport;
-  final List<List<Vector2>> polygons;
+  final MercatorViewport? viewport;
+  final List<List<Vector2>>? polygons;
 
   PolygonPainter(this.viewport, this.polygons);
 
   void _paintPolygon(Canvas canvas, List<Vector2> polygon) {
     for (int i = 0; i < polygon.length - 1; i++) {
-      final projFrom = viewport.project(polygon[i]) as Vector2;
-      final projTo = viewport.project(polygon[i + 1]) as Vector2;
+      final projFrom = viewport!.project(polygon[i]) as Vector2;
+      final projTo = viewport!.project(polygon[i + 1]) as Vector2;
 
       canvas.drawLine(
           Offset(projFrom[0], projFrom[1]),
@@ -156,15 +158,16 @@ class PolygonPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (viewport == null || polygons == null || polygons.isEmpty) {
+    if (viewport == null || polygons == null || polygons!.isEmpty) {
       return;
     }
 
-    for (final polygon in polygons) {
+    for (final polygon in polygons!) {
       _paintPolygon(canvas, polygon);
     }
   }
 
   @override
-  bool shouldRepaint(PolygonPainter oldDelegate) => true; // oldDelegate.viewport.pitch != viewport.pitch;
+  bool shouldRepaint(PolygonPainter oldDelegate) =>
+      true; // oldDelegate.viewport.pitch != viewport.pitch;
 }

@@ -46,7 +46,7 @@ MercatorViewport? viewportFromData(samples.ViewportData data) {
         lng: data.lng,
         lat: data.lat,
         zoom: data.zoom,
-        pitch: data.pitch,
+        pitch: data.pitch ?? 0.0,
       );
       break;
     case 'Rotated':
@@ -56,7 +56,7 @@ MercatorViewport? viewportFromData(samples.ViewportData data) {
         lng: data.lng,
         lat: data.lat,
         zoom: data.zoom,
-        pitch: data.pitch,
+        pitch: data.pitch ?? 0.0,
         altitude: data.altitude!,
       );
       break;
@@ -67,7 +67,7 @@ MercatorViewport? viewportFromData(samples.ViewportData data) {
         lng: data.lng,
         lat: data.lat,
         zoom: data.zoom,
-        pitch: data.pitch,
+        pitch: data.pitch ?? 0.0,
         altitude: data.altitude!,
       );
       break;
@@ -427,13 +427,14 @@ void main() {
     };
     test('MercatorViewport projection', () {
       final viewport = MercatorViewport(
-          width: viewportProps['width']!,
-          height: viewportProps['height']!,
-          lat: viewportProps['lat']!,
-          lng: viewportProps['lng']!,
-          zoom: viewportProps['zoom'],
-          pitch: viewportProps['pitch'],
-          bearing: viewportProps['bearing']);
+        width: viewportProps['width']!,
+        height: viewportProps['height']!,
+        lat: viewportProps['lat']!,
+        lng: viewportProps['lng']!,
+        zoom: viewportProps['zoom'] ?? 0.0,
+        pitch: viewportProps['pitch'] ?? 0.0,
+        bearing: viewportProps['bearing'] ?? 0.0,
+      );
 
       for (final proj in samples.projections) {
         print(proj['title']);
@@ -459,13 +460,14 @@ void main() {
 
     test('MercatorViewport projection#topLeft', () {
       final viewport = MercatorViewport(
-          width: viewportProps['width']!,
-          height: viewportProps['height']!,
-          lat: viewportProps['lat']!,
-          lng: viewportProps['lng']!,
-          zoom: viewportProps['zoom'],
-          pitch: viewportProps['pitch'],
-          bearing: viewportProps['bearing']);
+        width: viewportProps['width']!,
+        height: viewportProps['height']!,
+        lat: viewportProps['lat']!,
+        lng: viewportProps['lng']!,
+        zoom: viewportProps['zoom'] ?? 0.0,
+        pitch: viewportProps['pitch'] ?? 0.0,
+        bearing: viewportProps['bearing'] ?? 0.0,
+      );
 
       final topLeft = viewport.unproject(Vector2.zero()) as Vector2;
       final bottomLeft =

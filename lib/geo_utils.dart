@@ -243,7 +243,7 @@ Map<String, num> fitBounds({
   final center = Vector3((se[0] + nw[0]) * .5 + offsetX,
       (se[1] + nw[1]) * .5 + offsetY, double.nan);
   final centerLngLat = viewport.unproject(center) as Vector3;
-  final zoom = min(maxZoom, viewport.zoom! + log2(min(scaleX, scaleY)).abs());
+  final zoom = min(maxZoom, viewport.zoom + log2(min(scaleX, scaleY)).abs());
 
   assert(zoom.isFinite);
   return {'lng': centerLngLat[0], 'lat': centerLngLat[1], 'zoom': zoom};

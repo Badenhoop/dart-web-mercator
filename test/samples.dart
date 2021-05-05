@@ -5,14 +5,24 @@ class ViewportData {
   final double zoom, bearing;
   final double? pitch, altitude;
 
-  const ViewportData._(this.name, this.width, this.height, this.lng, this.lat, this.zoom, this.bearing, {this.pitch, this.altitude});
+  const ViewportData._(this.name, this.width, this.height, this.lng, this.lat,
+      this.zoom, this.bearing,
+      {this.pitch, this.altitude});
 
-  factory ViewportData.flat() => ViewportData._('Flat', 800, 600, -122.43, 37.75, 11.5, 0);
-  factory ViewportData.pitched() => ViewportData._('Pitched', 800, 600, -122.43, 37.75, 11.5, 0, pitch: 30);
-  factory ViewportData.rotated() => ViewportData._('Rotated', 1267, 400, -122.4194, 37.7749, 11, 180, pitch: 60, altitude: 1.5);
-  factory ViewportData.highLatitude() => ViewportData._('HighLatitude', 500, 500, 42.42694, 75.751537, 15.5, -40, pitch: 20, altitude: 1.5);
+  factory ViewportData.flat() =>
+      ViewportData._('Flat', 800, 600, -122.43, 37.75, 11.5, 0);
+  factory ViewportData.pitched() =>
+      ViewportData._('Pitched', 800, 600, -122.43, 37.75, 11.5, 0, pitch: 30);
+  factory ViewportData.rotated() =>
+      ViewportData._('Rotated', 1267, 400, -122.4194, 37.7749, 11, 180,
+          pitch: 60, altitude: 1.5);
+  factory ViewportData.highLatitude() =>
+      ViewportData._('HighLatitude', 500, 500, 42.42694, 75.751537, 15.5, -40,
+          pitch: 20, altitude: 1.5);
 
-  factory ViewportData.copyWith(ViewportData original, {double? lng, double? lat}) => ViewportData._(
+  factory ViewportData.copyWith(ViewportData original,
+          {double? lng, double? lat}) =>
+      ViewportData._(
         original.name,
         original.width,
         original.height,
@@ -32,7 +42,12 @@ class ViewportData {
   // - pitch: ${pitch ?? 'nan'}, altitude: ${altitude ?? 'nan'}''';
 }
 
-List<ViewportData> get viewports => [ViewportData.flat(), ViewportData.pitched(), ViewportData.rotated(), ViewportData.highLatitude()];
+List<ViewportData> get viewports => [
+      ViewportData.flat(),
+      ViewportData.pitched(),
+      ViewportData.rotated(),
+      ViewportData.highLatitude()
+    ];
 
 dynamic get bounds => [
       [
@@ -45,7 +60,11 @@ dynamic get bounds => [
             [-72.9876, 41.7661]
           ]
         },
-        {'lng': -73.48759999999997, 'lat': 41.26801443944763, 'zoom': 5.723804361273887}
+        {
+          'lng': -73.48759999999997,
+          'lat': 41.26801443944763,
+          'zoom': 5.723804361273887
+        }
       ],
       [
         {
@@ -57,7 +76,11 @@ dynamic get bounds => [
             [-73.9876, 40.7661]
           ]
         },
-        {'lng': -73.48759999999997, 'lat': 41.26801443944763, 'zoom': 5.723804361273887}
+        {
+          'lng': -73.48759999999997,
+          'lat': 41.26801443944763,
+          'zoom': 5.723804361273887
+        }
       ],
       [
         {
@@ -94,7 +117,11 @@ dynamic get bounds => [
           'padding': 20,
           'offset': [0, -40]
         },
-        {'lng': -23.406499999999973, 'lat': 64.86850056273362, 'zoom': 12.89199533073045}
+        {
+          'lng': -23.406499999999973,
+          'lat': 64.86850056273362,
+          'zoom': 12.89199533073045
+        }
       ],
       [
         {
